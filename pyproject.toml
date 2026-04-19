@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=72"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "swatch-scraper"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "beautifulsoup4>=4.12",
+    "patchright>=1.50",
+    "requests>=2.31",
+]
+
+[project.scripts]
+swatch-scraper = "swatch_scraper:main"
+swatch-test = "test_swatch_scraper:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
