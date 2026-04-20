@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=72"]
-build-backend = "setuptools.backends.legacy:build"
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "swatch-scraper"
@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-swatch-scraper = "swatch_scraper:main"
+swatch-scraper = "melchior:main"
 swatch-test = "test_swatch_scraper:main"
 
 [tool.setuptools.packages.find]

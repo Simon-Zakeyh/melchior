@@ -1,0 +1,7 @@
+pyproject.toml
+swatch_scraper.egg-info/PKG-INFO
+swatch_scraper.egg-info/SOURCES.txt
+swatch_scraper.egg-info/dependency_links.txt
+swatch_scraper.egg-info/entry_points.txt
+swatch_scraper.egg-info/requires.txt
+swatch_scraper.egg-info/top_level.txt

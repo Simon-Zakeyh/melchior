@@ -1,0 +1,3 @@
+[console_scripts]
+swatch-scraper = melchior:main
+swatch-test = test_swatch_scraper:main
