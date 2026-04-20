@@ -63,8 +63,8 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler("swatch_scraper.log"),
+        logging.StreamHandler(open(sys.stdout.fileno(), mode='w', encoding='utf-8', closefd=False)),
+        logging.FileHandler("swatch_scraper.log", encoding="utf-8"),
     ],
 )
 log = logging.getLogger(__name__)
@@ -607,9 +607,9 @@ async def phase2_scrape_products(browser, urls: list, done_codes: set) -> None:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 async def main():
-    log.info("╔══════════════════════════════════════╗")
-    log.info("║       Swatch Catalog Scraper         ║")
-    log.info("╚══════════════════════════════════════╝")
+    log.info("==========================================")
+    log.info("         Swatch Catalog Scraper           ")
+    log.info("==========================================")
 
     done_codes = load_done_codes()
     log.info(f"Resuming — {len(done_codes)} products already in CSV.")
