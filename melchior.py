@@ -206,7 +206,12 @@ async def collect_urls_via_browser(browser) -> list:
     page = await new_stealth_page(browser)
 
     log.info("  Loading finder page in browser…")
-    await page.goto(FINDER_URL, wait_until=WAIT_UNTIL, timeout=PAGE_TIMEOUT)
+    try:
+        await page.goto(FINDER_URL, wait_until=WAIT_UNTIL, timeout=PAGE_TIMEOUT)
+    except Exception as e:
+        log.error(f"  Failed to load finder page: {e}")
+        await page.close()
+        return []
     try:
         await page.wait_for_selector("[data-analytics]", timeout=20_000)
     except PWTimeout:
@@ -275,7 +280,9 @@ async def collect_urls_via_browser(browser) -> list:
             await page.wait_for_selector("[data-analytics]", timeout=15_000)
         except PWTimeout:
             log.warning("  Timeout after next-page click — continuing.")
-        await asyncio.sleep(PAGE_DELAY)
+        except Exception as e:
+            log.warning(f"  Error after next-page click: {e} — stopping pagination.")
+            break
 
     await page.close()
     return urls
@@ -293,7 +300,18 @@ async def phase1_get_urls(browser) -> list:
 
     # Try AJAX first (faster, no rendering overhead)
     probe_page = await new_stealth_page(browser)
-    await probe_page.goto(FINDER_URL, wait_until=WAIT_UNTIL, timeout=PAGE_TIMEOUT)
+    try:
+        await probe_page.goto(FINDER_URL, wait_until=WAIT_UNTIL, timeout=PAGE_TIMEOUT)
+    except Exception as e:
+        log.warning(f"  Probe page failed to load: {e} — skipping AJAX attempt.")
+        await probe_page.close()
+        log.info("Falling back to browser-based pagination…")
+        urls = await collect_urls_via_browser(browser)
+        urls = list(dict.fromkeys(urls))
+        with open(URLS_FILE, "w") as f:
+            f.write("\n".join(urls))
+        log.info(f"Phase 1 complete: {len(urls)} product URLs saved to {URLS_FILE}")
+        return urls
     try:
         await probe_page.wait_for_selector("[data-analytics]", timeout=20_000)
     except PWTimeout:
@@ -621,6 +639,7 @@ async def main():
                 "--no-sandbox",
                 "--disable-blink-features=AutomationControlled",
                 "--disable-dev-shm-usage",
+                "--disable-http2",
             ],
         )
 
